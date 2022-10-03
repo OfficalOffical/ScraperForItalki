@@ -40,9 +40,39 @@ class scraperCreator():
             if new_height == last_height:
                 break
             last_height = new_height
+        self.driver.find_element(By.CSS_SELECTOR, ".text-normal").click()
+
 
     def buttonClickShowMore(self):
-        self.driver.find_element(By.CSS_SELECTOR, ".text-normal").click()
+
+
+        try:
+            for x in self.driver.find_elements(By.CSS_SELECTOR, ".pr-4"):
+                self.driver.execute_script("arguments[0].click();", x)
+
+        except:
+            print("No more buttons to click")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    def soupSpoon(self):
+        soup = BeautifulSoup(self.driver.page_source, 'html.parser')
+
+        htmlTxt = soup.find_all('div', class_='regular-body relative break-words whitespace-pre-wrap overflow-hidden')
+
+        for txt in htmlTxt:
+            print(txt.text)
 
 
 
@@ -56,16 +86,16 @@ def scrapeWebFromArchive():
 
     mainScrape.makeConnection()
 
-
-
-
-    mainScrape.scroolydowniytimeywimey()
+    for x in range(0, 100):
+        mainScrape.scroolydowniytimeywimey()
 
     mainScrape.buttonClickShowMore()
 
+    mainScrape.soupSpoon()
 
 
-    mainScrape.closeConnection()
+
+
 
 
     """# Find all the <a> tags
