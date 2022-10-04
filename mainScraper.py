@@ -1,7 +1,8 @@
 from selenium import webdriver
 from bs4 import BeautifulSoup
 import time
-import re
+import csv
+import pandas as pd
 
 from selenium.webdriver.common.by import By
 
@@ -12,13 +13,9 @@ def mainWebScraper():
 
 class scraperCreator():
 
-
     def __init__(self, url):
         self.url = url
         self.driver = webdriver.Chrome()
-
-
-
 
     def makeConnection(self):
         self.driver.get(self.url)
@@ -45,9 +42,7 @@ class scraperCreator():
             last_height = new_height
         self.driver.find_element(By.CSS_SELECTOR, ".text-normal").click()
 
-
     def buttonClickShowMore(self):
-
 
         try:
             for x in self.driver.find_elements(By.CSS_SELECTOR, ".pr-4"):
@@ -56,67 +51,49 @@ class scraperCreator():
         except:
             print("No more buttons to click")
 
-
-
-
-
-
-
-
-
-
-
-
-
-
     def soupSpoon(self):
 
-        htmlTxt = []
-        TurkishLangChecker = "url(\"https://scdn.italki.com/orion/static/flags/tr.svg\")"
 
+            htmlLangHolder = []
+            htmlTextHolder = []
 
-        soup = BeautifulSoup(self.driver.page_source, 'html.parser')
+            soup = BeautifulSoup(self.driver.page_source, 'html.parser')
 
+            htmlParent = soup.find_all('div', class_='w-full bg-white mb-2 md:mb-0 px-4 md:px-8 py-6')
 
+            for htmlIterator in htmlParent:
+                htmlLang = htmlIterator.find('i', class_='ant-avatar-flag')
+                htmlLangStart = htmlLang['style'].find('flags/')
+                htmlLangEnd = htmlLang['style'].find('.svg')
+                htmlLang = htmlLang['style'][htmlLangStart + 6: htmlLangEnd]
+                htmlLangHolder.append(htmlLang)
+                if (htmlLang != 'tr'):
+                    for textFinder in htmlIterator.find_all('div',
+                                                            class_='regular-body relative break-words whitespace-pre-wrap overflow-hidden'):
+                        htmlTextHolder.append(textFinder.text)
+                        break
 
-        #getting text
-        htmlParent = soup.find_all('div', class_='w-full bg-white mb-2 md:mb-0 px-4 md:px-8 py-6')
-        #getting parent
+            header = ["Text", "Language"]
 
+            with open('dataHolder.csv', 'w', encoding='UTF8') as f:
+                writer = csv.writer(f)
+                writer.writerow(header)
+                writer.writerows(zip(htmlTextHolder, htmlLangHolder))
+            f.close()
 
-        for htmlIterator in htmlParent:
-
-            htmlLang = htmlIterator.find('i', class_='ant-avatar-flag')
-            # regex to get the url
-            htmlLangStart = htmlLang['style'].find('flags/')
-            htmlLangEnd = htmlLang['style'].find('.svg')
-            htmlLang = htmlLang['style'][htmlLangStart + 6: htmlLangEnd]
-
-            if(htmlLang != 'tr'):
-                for textFinder in htmlIterator.find_all('div', class_='regular-body relative break-words whitespace-pre-wrap overflow-hidden'):
-                    htmlTxt.append(textFinder.text)
-
-        print(len(htmlTxt))
-
-
-
-
-        print("All Turkish reviews are deleted")
-
+            data = pd.read_csv('dataHolder.csv')
+            print(data.head(10))
 
 
 
 def scrapeWebFromArchive():
-
     url = "https://www.italki.com/en/community/exercises?language=turkish"
 
     mainScrape = scraperCreator(url)
 
     mainScrape.makeConnection()
 
-
-
-    for x in range(0, 5):
+    for x in range(0, 1):
         mainScrape.scroolydowniytimeywimey()
 
     mainScrape.buttonClickShowMore()
@@ -124,9 +101,6 @@ def scrapeWebFromArchive():
     mainScrape.soupSpoon()
 
     mainScrape.closeConnection()
-
-
-
 
     """# Find all the <a> tags
     links = soup.find_all('a', class_='au av aw ax ay az ba bb bc bd be bf bg bh bi')
@@ -137,17 +111,6 @@ def scrapeWebFromArchive():
                 print(link.get('href'))
                 webHolder.append("https://medium.com" + link.get('href'))"""
 
-
-
-
-
-
-
-
-
-
-
     # Close the browser
 
-    #--print(len(links))
-
+    # --print(len(links))
