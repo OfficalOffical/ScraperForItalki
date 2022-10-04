@@ -17,6 +17,8 @@ class scraperCreator():
         self.driver = webdriver.Chrome()
 
 
+
+
     def makeConnection(self):
         self.driver.get(self.url)
 
@@ -67,12 +69,36 @@ class scraperCreator():
 
 
     def soupSpoon(self):
+        tempCounter = 0
+
+        indexToDelTr = []
+        TurkishLangChecker = "url(\"https://scdn.italki.com/orion/static/flags/tr.svg\")"
+
         soup = BeautifulSoup(self.driver.page_source, 'html.parser')
 
         htmlTxt = soup.find_all('div', class_='regular-body relative break-words whitespace-pre-wrap overflow-hidden')
 
-        for txt in htmlTxt:
-            print(txt.text)
+        tempCabbarus = self.driver.find_elements(By.CSS_SELECTOR, ".ant-avatar-flag")
+
+        for x in tempCabbarus:
+            tempCounter+= 1
+            if x.value_of_css_property('background-image') == TurkishLangChecker:
+                indexToDelTr.append(tempCounter)
+            else:
+                continue
+
+
+        print(indexToDelTr)
+
+
+
+
+
+
+
+        """for txt in htmlTxt:
+            print(txt.text)"""
+
 
 
 
@@ -86,7 +112,9 @@ def scrapeWebFromArchive():
 
     mainScrape.makeConnection()
 
-    for x in range(0, 100):
+
+
+    for x in range(0, 5):
         mainScrape.scroolydowniytimeywimey()
 
     mainScrape.buttonClickShowMore()
@@ -94,6 +122,7 @@ def scrapeWebFromArchive():
     mainScrape.soupSpoon()
 
 
+    mainScrape.closeConnection()
 
 
 
