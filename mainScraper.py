@@ -1,6 +1,7 @@
 from selenium import webdriver
 from bs4 import BeautifulSoup
 import time
+import re
 
 from selenium.webdriver.common.by import By
 
@@ -70,25 +71,67 @@ class scraperCreator():
 
     def soupSpoon(self):
         tempCounter = 0
-
+        popCounter = 0
         indexToDelTr = []
         TurkishLangChecker = "url(\"https://scdn.italki.com/orion/static/flags/tr.svg\")"
 
+
         soup = BeautifulSoup(self.driver.page_source, 'html.parser')
 
+
+
+        #getting text
         htmlTxt = soup.find_all('div', class_='regular-body relative break-words whitespace-pre-wrap overflow-hidden')
+        #getting parent
 
-        tempCabbarus = self.driver.find_elements(By.CSS_SELECTOR, ".ant-avatar-flag")
 
-        for x in tempCabbarus:
+
+        a = htmlTxt[0].find_parent('div', class_='w-full bg-white mb-2 md:mb-0 px-4 md:px-8 py-6')
+
+
+        print(a.text)
+
+
+
+
+        """#getting flag
+        a = a.find('i', class_='ant-avatar-flag')
+        #regex to get the url
+        temp = a['style'].find('flags/')
+        temp2 = a['style'].find('.svg')"""
+
+
+        print(a['style'][temp+6:temp2])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        print(len(htmlTxt))
+
+
+
+        """tempFlagHolder = self.driver.find_elements(By.CSS_SELECTOR, ".ant-avatar-flag")
+
+        for flags in tempFlagHolder:
             tempCounter+= 1
-            if x.value_of_css_property('background-image') == TurkishLangChecker:
+            if flags.value_of_css_property('background-image') == TurkishLangChecker:
                 indexToDelTr.append(tempCounter)
             else:
-                continue
+                continue"""
 
 
-        print(indexToDelTr)
+
+
 
 
 
@@ -99,7 +142,7 @@ class scraperCreator():
         """for txt in htmlTxt:
             print(txt.text)"""
 
-
+        print("All Turkish reviews are deleted")
 
 
 
@@ -114,13 +157,12 @@ def scrapeWebFromArchive():
 
 
 
-    for x in range(0, 5):
+    for x in range(0, 1):
         mainScrape.scroolydowniytimeywimey()
 
     mainScrape.buttonClickShowMore()
 
     mainScrape.soupSpoon()
-
 
     mainScrape.closeConnection()
 
