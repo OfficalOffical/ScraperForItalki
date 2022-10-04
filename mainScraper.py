@@ -70,9 +70,8 @@ class scraperCreator():
 
 
     def soupSpoon(self):
-        tempCounter = 0
-        popCounter = 0
-        indexToDelTr = []
+
+        htmlTxt = []
         TurkishLangChecker = "url(\"https://scdn.italki.com/orion/static/flags/tr.svg\")"
 
 
@@ -81,66 +80,26 @@ class scraperCreator():
 
 
         #getting text
-        htmlTxt = soup.find_all('div', class_='regular-body relative break-words whitespace-pre-wrap overflow-hidden')
+        htmlParent = soup.find_all('div', class_='w-full bg-white mb-2 md:mb-0 px-4 md:px-8 py-6')
         #getting parent
 
 
+        for htmlIterator in htmlParent:
 
-        a = htmlTxt[0].find_parent('div', class_='w-full bg-white mb-2 md:mb-0 px-4 md:px-8 py-6')
+            htmlLang = htmlIterator.find('i', class_='ant-avatar-flag')
+            # regex to get the url
+            htmlLangStart = htmlLang['style'].find('flags/')
+            htmlLangEnd = htmlLang['style'].find('.svg')
+            htmlLang = htmlLang['style'][htmlLangStart + 6: htmlLangEnd]
 
-
-        print(a.text)
-
-
-
-
-        """#getting flag
-        a = a.find('i', class_='ant-avatar-flag')
-        #regex to get the url
-        temp = a['style'].find('flags/')
-        temp2 = a['style'].find('.svg')"""
-
-
-        print(a['style'][temp+6:temp2])
-
-
-
-
-
-
-
-
-
-
-
-
-
+            if(htmlLang != 'tr'):
+                for textFinder in htmlIterator.find_all('div', class_='regular-body relative break-words whitespace-pre-wrap overflow-hidden'):
+                    htmlTxt.append(textFinder.text)
 
         print(len(htmlTxt))
 
 
 
-        """tempFlagHolder = self.driver.find_elements(By.CSS_SELECTOR, ".ant-avatar-flag")
-
-        for flags in tempFlagHolder:
-            tempCounter+= 1
-            if flags.value_of_css_property('background-image') == TurkishLangChecker:
-                indexToDelTr.append(tempCounter)
-            else:
-                continue"""
-
-
-
-
-
-
-
-
-
-
-
-        """for txt in htmlTxt:
-            print(txt.text)"""
 
         print("All Turkish reviews are deleted")
 
@@ -157,7 +116,7 @@ def scrapeWebFromArchive():
 
 
 
-    for x in range(0, 1):
+    for x in range(0, 5):
         mainScrape.scroolydowniytimeywimey()
 
     mainScrape.buttonClickShowMore()
