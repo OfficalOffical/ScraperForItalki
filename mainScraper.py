@@ -53,36 +53,51 @@ class scraperCreator():
 
     def soupSpoon(self):
 
+            try :
+                htmlLangHolder = []
+                htmlTextHolder = []
 
-            htmlLangHolder = []
-            htmlTextHolder = []
+                soup = BeautifulSoup(self.driver.page_source, 'html.parser')
 
-            soup = BeautifulSoup(self.driver.page_source, 'html.parser')
+                htmlParent = soup.find_all('div', class_='w-full bg-white mb-2 md:mb-0 px-4 md:px-8 py-6')
 
-            htmlParent = soup.find_all('div', class_='w-full bg-white mb-2 md:mb-0 px-4 md:px-8 py-6')
+                for htmlIterator in htmlParent:
+                    try:
 
-            for htmlIterator in htmlParent:
-                htmlLang = htmlIterator.find('i', class_='ant-avatar-flag')
-                htmlLangStart = htmlLang['style'].find('flags/')
-                htmlLangEnd = htmlLang['style'].find('.svg')
-                htmlLang = htmlLang['style'][htmlLangStart + 6: htmlLangEnd]
-                htmlLangHolder.append(htmlLang)
-                if (htmlLang != 'tr'):
-                    for textFinder in htmlIterator.find_all('div',
-                                                            class_='regular-body relative break-words whitespace-pre-wrap overflow-hidden'):
-                        htmlTextHolder.append(textFinder.text)
-                        break
+                        htmlLang = htmlIterator.find('i', class_='ant-avatar-flag')
+                        htmlLangStart = htmlLang['style'].find('flags/')
+                        htmlLangEnd = htmlLang['style'].find('.svg')
+                        htmlLang = htmlLang['style'][htmlLangStart + 6: htmlLangEnd]
+                        htmlLangHolder.append(htmlLang)
+                        if (htmlLang != 'tr'):
+                            for textFinder in htmlIterator.find_all('div',
+                                                                    class_='regular-body relative break-words whitespace-pre-wrap overflow-hidden'):
+                                htmlTextHolder.append(textFinder.text)
+                                break
+                    except Exception as e:
+                        print(e)
+                        pass
 
-            header = ["Text", "Language"]
 
-            with open('dataHolder.csv', 'w', encoding='UTF8') as f:
-                writer = csv.writer(f)
-                writer.writerow(header)
-                writer.writerows(zip(htmlTextHolder, htmlLangHolder))
-            f.close()
 
-            data = pd.read_csv('dataHolder.csv')
-            print(data.head(10))
+                header = ["Text", "Language"]
+
+                with open('dataHolder.csv', 'w', encoding='UTF8') as f:
+                    writer = csv.writer(f)
+                    writer.writerow(header)
+                    writer.writerows(zip(htmlTextHolder, htmlLangHolder))
+                f.close()
+
+                data = pd.read_csv('dataHolder.csv')
+                print(data.head(10))
+
+            except Exception as e:
+                print(e)
+                time.sleep(1000000)
+
+
+
+
 
 
 
@@ -92,25 +107,15 @@ def scrapeWebFromArchive():
     mainScrape = scraperCreator(url)
 
     mainScrape.makeConnection()
+    while True:
 
-    for x in range(0, 1):
         mainScrape.scroolydowniytimeywimey()
 
-    mainScrape.buttonClickShowMore()
+        mainScrape.buttonClickShowMore()
 
-    mainScrape.soupSpoon()
+        mainScrape.soupSpoon()
+
+
 
     mainScrape.closeConnection()
 
-    """# Find all the <a> tags
-    links = soup.find_all('a', class_='au av aw ax ay az ba bb bc bd be bf bg bh bi')
-    for link in links:
-        if (link.get('aria-label') != None):
-            tempCounter += 1
-            if (tempCounter % 3 == 0):
-                print(link.get('href'))
-                webHolder.append("https://medium.com" + link.get('href'))"""
-
-    # Close the browser
-
-    # --print(len(links))
